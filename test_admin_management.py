@@ -12,9 +12,9 @@ from ai_hybrid_evaluator.pages.admin.settings import SettingsState, access_contr
 from ai_hybrid_evaluator.state.auth_state import AuthState
 from backend.services.group_admin_service import GroupAdminService
 from backend.services.master_admin_service import MasterAdminService
-from developer_console.developer_console.developer_console import State
+from developer_console.developer_console import State
 import ai_hybrid_evaluator.pages.admin.settings as settings
-import developer_console.developer_console.developer_console as console
+import developer_console.developer_console as console
 
 
 class DeveloperConsoleAdminManagementTests(unittest.TestCase):
@@ -77,7 +77,7 @@ class DeveloperConsoleAdminManagementTests(unittest.TestCase):
                 settings, "MasterAdminService", return_value=self.master_service
             ),
         ):
-            app_state.load_admin_accounts()
+            asyncio.run(app_state.load_admin_accounts())
 
             self.assertTrue(
                 all(
@@ -101,7 +101,7 @@ class DeveloperConsoleAdminManagementTests(unittest.TestCase):
                 self.service.authenticate("New Group Admin", "initial-pass")
             )
 
-            app_state.load_admin_accounts()
+            asyncio.run(app_state.load_admin_accounts())
             self.assertEqual(
                 [account["username"] for account in app_state.admin_accounts],
                 ["Master User", "Existing Group User", "New Group Admin"],
@@ -136,10 +136,10 @@ class DeveloperConsoleAdminManagementTests(unittest.TestCase):
                     mock_login("Updated Group Admin", "reset-pass")["success"]
                 )
 
-            app_state.load_admin_accounts()
+            asyncio.run(app_state.load_admin_accounts())
             asyncio.run(app_state.open_delete_admin_dialog(2))
             asyncio.run(app_state.confirm_delete_admin())
-            app_state.load_admin_accounts()
+            asyncio.run(app_state.load_admin_accounts())
             self.assertEqual(
                 [account["username"] for account in app_state.admin_accounts],
                 ["Master User", "Existing Group User"],
@@ -162,7 +162,7 @@ class DeveloperConsoleAdminManagementTests(unittest.TestCase):
         auth_state = asyncio.run(app_root_state.get_state(AuthState))
         auth_state.is_authenticated = True
         auth_state.admin_role = "Administrator"
-        app_state.load_admin_accounts()
+        asyncio.run(app_state.load_admin_accounts())
 
         app_state.new_admin_username = "Unauthorized"
         app_state.new_admin_password = "unauthorized-pass"

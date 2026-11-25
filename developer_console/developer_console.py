@@ -7,9 +7,17 @@ from pathlib import Path
 import reflex as rx
 from dotenv import dotenv_values
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+CONSOLE_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = CONSOLE_PROJECT_ROOT
+
+_configured_main_root = os.getenv("APP_PROJECT_ROOT", "").strip()
+MAIN_PROJECT_ROOT = (
+    Path(_configured_main_root).expanduser().resolve()
+    if _configured_main_root
+    else CONSOLE_PROJECT_ROOT.parent / "ai_hybrid_evaluator_new"
+)
+if MAIN_PROJECT_ROOT.is_dir() and str(MAIN_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(MAIN_PROJECT_ROOT))
 
 from backend.services.group_admin_service import GroupAdminService
 from backend.services.database_configuration_service import (
@@ -20,7 +28,7 @@ from backend.services.database_configuration_service import (
 from backend.data_paths import get_active_data_dir
 from backend.services.master_admin_service import MasterAdminService
 
-CONSOLE_ENV_FILE = PROJECT_ROOT / "developer_console" / ".env"
+CONSOLE_ENV_FILE = CONSOLE_PROJECT_ROOT / ".env"
 
 
 def _developer_credentials():

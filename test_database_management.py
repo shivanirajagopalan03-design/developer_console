@@ -18,8 +18,8 @@ from backend.services.group_admin_service import GroupAdminService
 from backend.services.master_admin_service import MasterAdminService
 from ai_hybrid_evaluator.state.candidate_state import CandidateState
 from ai_hybrid_evaluator.state.facilitator_state import FacilitatorState
-from developer_console.developer_console.developer_console import State
-import developer_console.developer_console.developer_console as console
+from developer_console.developer_console import State
+import developer_console.developer_console as console
 
 
 class DatabaseConfigurationServiceTests(unittest.TestCase):

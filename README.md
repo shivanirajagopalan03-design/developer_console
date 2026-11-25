@@ -30,8 +30,20 @@ repository data is imported without overwriting conflicting MySQL data. The API
 checker verifies HTTPS transport only: no API contract or authentication endpoint is
 configured, so it does not claim API authentication.
 
-The compatibility layer stores each existing JSON data file as one JSON value in
-MySQL to preserve current repository behavior. This is not a normalized schema, and
-whole-collection writes are not a production-scale multi-instance design. Uploaded
+The default shared application source is the sibling `ai_hybrid_evaluator_new`
+folder; `APP_PROJECT_ROOT` can explicitly select another deployment.
+With an existing frontend on port 3001, start just the production backend using
+`python scripts/run_backend.py` from the console folder. This works around the
+installed CLI's forwarding of the frontend port in backend-only mode.
+
+The approved entity-table migration creates 21 separate business tables, including
+`EMP_information`, and keeps the old `application_json_documents` table as a
+pre-migration recovery snapshot. Run `scripts/migrate_entity_tables.py` from the
+main application for a preview; use `--apply` during a coordinated application
+restart. Row copying and activation commit together after exact round-trip
+verification. `application_table_documents` tracks collection existence and shape.
+Nested questions/answers remain JSON columns; unknown fields are retained in an
+extension column. Whole-collection writes still require the shared application
+lock and are not a production-scale multi-instance design. Uploaded
 assessment and response files also remain in the configured server-side upload
 directory; activating MySQL does not migrate those files.
